@@ -1,0 +1,78 @@
+---
+title: "Regression linéaire"
+author: "Laurent DELSOL"
+output: word_document
+params:
+  n: 30
+  X_law: 'N(0,1)'  
+  x0: 0
+  a: 3
+  b: -3
+  s: 1
+  x: NULL
+  e: NULL
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+x=params$x
+e=params$e
+a=params$a
+b=params$b
+s=params$s
+if (is.null(x)) x=rnorm(30)
+if (is.null(e)) e=rnorm(30)
+
+y=a*x+b+s*e
+```
+
+## Génération du modèle et des données
+On a généré avec R des `r params$n` données suivant le modèle:
+
+Y= `r params$a` X + `r params$b`+ `r params$s`$\epsilon$
+
+avec $X \sim$ `r params$X_law` et $\epsilon\sim$ N(0,1).
+```{r modele}
+
+```
+On obtient ainsi `r params$n` observations correspondant à un modèle linéraire d'équation $$Y=`r a` X+`r b`.$$
+
+## Nuage de points
+
+```{r nuage, fig.height=5,echo=FALSE}
+plot(x,y)
+```
+
+## Corrélation
+
+```{r}
+r=cor(x,y)
+r
+```
+On prendra garde à ne consulter les sections suivantes que si le lien linéaire est confirmé par le nuage de points et la valeur de la corrélation.
+
+## Equation de la droite de régression estimée
+
+```{r}
+res=lm(y~x)
+summary(res)
+a0=res$coefficients[2]
+b0=res$coefficients[1]
+```
+Droite de régression estimée: Y=`r a0` X+`r b0`.
+
+Coefficient de détermination: R^2^=`r cor(x,y)^2` (pourcentage de variance totale expliqué par le modèle linéaire)
+
+
+
+```{r fig.height=5,echo=FALSE}
+plot(x,y,main='Droite(s) de régression')
+abline(b,a,col='red')
+abline(b0,a0,col='blue')
+```
+
+La vraie droite (en rouge) et son estimation (en bleu).
+
+## Estimation:
+
+Lorsque X=`r params$x0` la valeur moyenne de Y est estimée par `r predict(res,data.frame(x=params$x0))`. 
