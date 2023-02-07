@@ -30,9 +30,6 @@ shinyUI(navbarPage("Linear regression with R",
                                 actionButton('train','Je veux entrainer un réseau !')
                               ))
                             )
-                            
-                            
-                            
                    ),
                    navbarMenu("Cours",
                               tabPanel("Perceptron",
@@ -51,53 +48,13 @@ shinyUI(navbarPage("Linear regression with R",
                                            actionButton('handtrain','Séparer des données')
                                          ))
                                        )
-                                       
-                                       
-                                       
-                                       
-                                       
                               ),
                               tabPanel("Entrainer à la main",
                                        value = "handtrain",
-                                       sidebarLayout(
-                                         sidebarPanel(
-                                           selectInput(inputId = "Dataset", label = "Choose a dataset",
-                                                       choices=c('1','2','3') ,multiple = FALSE, selected='1'),
-                                           sliderInput("ax1","A:",min = -10,max = 10,value = 3),
-                                           sliderInput("by1","B:",min = -10,max = 10,value = -3),
-                                           sliderInput("c1","C:",min = -10,max = 10,value = -3),
-                                         ),
-                                         
-                                         # Show a plot of the generated distribution
-                                         mainPanel(
-                                           plotOutput("dynamicPlot"),
-                                           downloadButton("report", "Generate report")
-                                           
-                                         )
-                                         
-                                       )),
+                                       ),
                               tabPanel("Auto-entrainement",
                                        value = "autotrain",
-                                       sidebarLayout(
-                                         sidebarPanel(
-                                           selectInput(inputId = "X_law", label = "Choose X\'s distribution",
-                                                       choices=c('N(0,1)','Exp(1)','U(0,1)') ,multiple = FALSE, selected='N(0,1)'),
-                                           sliderInput("n","Sample size:",min = 1,max = 100,value = 30),
-                                           sliderInput("a","A:",min = -10,max = 10,value = 3),
-                                           sliderInput("b","B:",min = -10,max = 10,value = -3),
-                                           sliderInput("s","S:",min =0,max = 10,value =1,step= .01),
-                                           sliderInput("x0","Eval.point :",min =-2,max = 2,value =1,step= .01)
-                                           
-                                         ),
-                                         
-                                         # Show a plot of the generated distribution
-                                         mainPanel(
-                                           plotOutput("Scatterplot"),
-                                           downloadButton("report", "Generate report")
-                                           
-                                         )
-                                         
-                                       )),
+                                      ),
                               tabPanel("Réseaux de neuronnes")),
                    tabPanel('Simulations',
                             # Application title
