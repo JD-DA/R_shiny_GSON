@@ -34,6 +34,71 @@ shinyUI(navbarPage("Linear regression with R",
                             
                             
                    ),
+                   navbarMenu("Cours",
+                              tabPanel("Perceptron",
+                                       value="perceptron",
+                                       fluidRow(
+                                         column(10,wellPanel(
+                                           h3("1. Perceptron"),
+                                           p("La brique de base d'un réseau de neuronne est... le neurone."),
+                                           p("Comme souvent en Intelligence Artificielle on cherche à mimer le fonctionnement du raisonnement humain. C'est donc tout naturellement que l'on cherche à moddéliser la brique la plus élémentaire: le neurone"),
+                                           img(src="./neuronOrga.jpg",width="20%",style="display: block; margin-left: auto; margin-right: auto;"),
+                                           p("Un neurone est composé d'un noyau auxquels sont reliés des dentrites. Ceux ci vont recevoir des signaux éléctrochimique, les transmettre au noyau qui va a son tour envoyer des signaux."),
+                                           p("Un neurone en informatique est donc une simple modélisation de cette agrégation de signaux d'entrée et d'un calcul d'un sortie. Il suit cette formule :"),
+                                           uiOutput("formuleNeurone"),
+                                           img(src="./neuron.png",width="20%",style="display: block; margin-left: auto; margin-right: auto;"),
+                                           p("On peut utiliser ce neurone, seul, en qualité de perceptron. Un perceptron est un algorithme d'apprentissage supervisé de clasifeur binaire. Il permet de séparer des données linérairement séparables. En prenant en entrée chaque dimension il va chercher un hyperplan qui va séparer les deux classes de nos données dans la perspectives de pouvoir classifier les prochains exemples à leurs tour."),
+                                           actionButton('handtrain','Séparer des données')
+                                         ))
+                                       )
+                                       
+                                       
+                                       
+                                       
+                                       
+                              ),
+                              tabPanel("Entrainer à la main",
+                                       value = "handtrain",
+                                       sidebarLayout(
+                                         sidebarPanel(
+                                           selectInput(inputId = "Dataset", label = "Choose a dataset",
+                                                       choices=c('1','2','3') ,multiple = FALSE, selected='1'),
+                                           sliderInput("ax1","A:",min = -10,max = 10,value = 3),
+                                           sliderInput("by1","B:",min = -10,max = 10,value = -3),
+                                           sliderInput("c1","C:",min = -10,max = 10,value = -3),
+                                         ),
+                                         
+                                         # Show a plot of the generated distribution
+                                         mainPanel(
+                                           plotOutput("dynamicPlot"),
+                                           downloadButton("report", "Generate report")
+                                           
+                                         )
+                                         
+                                       )),
+                              tabPanel("Auto-entrainement",
+                                       value = "autotrain",
+                                       sidebarLayout(
+                                         sidebarPanel(
+                                           selectInput(inputId = "X_law", label = "Choose X\'s distribution",
+                                                       choices=c('N(0,1)','Exp(1)','U(0,1)') ,multiple = FALSE, selected='N(0,1)'),
+                                           sliderInput("n","Sample size:",min = 1,max = 100,value = 30),
+                                           sliderInput("a","A:",min = -10,max = 10,value = 3),
+                                           sliderInput("b","B:",min = -10,max = 10,value = -3),
+                                           sliderInput("s","S:",min =0,max = 10,value =1,step= .01),
+                                           sliderInput("x0","Eval.point :",min =-2,max = 2,value =1,step= .01)
+                                           
+                                         ),
+                                         
+                                         # Show a plot of the generated distribution
+                                         mainPanel(
+                                           plotOutput("Scatterplot"),
+                                           downloadButton("report", "Generate report")
+                                           
+                                         )
+                                         
+                                       )),
+                              tabPanel("Réseaux de neuronnes")),
                    tabPanel('Simulations',
                             # Application title
                             # Sidebar with a slider input for number of bins 
