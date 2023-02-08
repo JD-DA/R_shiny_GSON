@@ -11,7 +11,10 @@ library(shiny)
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
   
-        
+  output$formuleNeurone <- renderUI({
+    withMathJax(paste("$$w_1x_1+\\ldots+w_mx_m=\\sum_{j=1}^m w_j x_j.$$"))
+  })
+  
         output$Variables = renderUI(
           {
             if (!is.null(input$Dataset))
@@ -94,6 +97,17 @@ shinyServer(function(input, output) {
          abline(res,col='red')
          }
        })
+       
+       output$handPlot <- renderPlot({
+         # generate y values based on input$a, input$b and input$s from ui.R
+         set.seed(1)
+         x <- rnorm(5)
+         y <- x + rnorm(5)
+         plot(x,y)
+         abline(input$a_hand,input$b_hand,col='red')
+       })
+       
+       output$value <-renderPrint({input$a})
        
        
        output$report <- downloadHandler(

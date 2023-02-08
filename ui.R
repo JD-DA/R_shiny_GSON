@@ -51,6 +51,21 @@ shinyUI(navbarPage("Linear regression with R",
                               ),
                               tabPanel("Entrainer à la main",
                                        value = "handtrain",
+                                       sidebarLayout(
+                                         sidebarPanel(
+                                           sliderInput("a_hand","A:",min = -10,max = 10,value = 3),
+                                           sliderInput("b_hand","B:",min = -10,max = 10,value = -3),
+                                           verbatimTextOutput("value")
+                                         ),
+                                         
+                                         # Show a plot of the generated distribution
+                                         mainPanel(
+                                           plotOutput("handPlot"),
+                                           
+
+                                         )
+                                         
+                                       )
                                        ),
                               tabPanel("Auto-entrainement",
                                        value = "autotrain",
