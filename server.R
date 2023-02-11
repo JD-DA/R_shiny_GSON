@@ -9,6 +9,70 @@
 
 library(shiny)
 # Define server logic required to draw a histogram
+generate_random_weight <- function(number_weight_to_generate, lower_bound, upper_bound) {
+  return (sample(lower_bound : upper_bound, size = number_weight_to_generate, replace = TRUE))
+}
+matrix_product <- function(data, weights) {
+  as.matrix(data, nrow = 1) %*% as.matrix(weights, ncol = 1)
+}
+add_biais_column <- function(data_set) {
+  data_amount <- nrow(data_set)
+  data_set$biais <- rep(1, times = data_amount)
+  data_set <- data_set[, c(c(ncol(data_set)), seq(from = 1, to = ncol(data_set) - 1, by = 1))]
+  return(data_set)
+}
+normalize_class_column <- function(data_set) {
+  default_value <- data_set[1, ncol(data_set)]
+  data_set[ncol(data_set)] <- ifelse(data_set[ncol(data_set)] == default_value, 0, 1)
+  return(data_set)
+}
+perceptron <- function(data_set, max_learning_rate) {
+  data_dimension <- ncol(data_set) - 1
+  data_amount <- nrow(data_set)
+  weights <- generate_random_weight(data_dimension, -1, 1)
+  output_guess <- data_set[, data_dimension + 1]
+  is_stabilize <- FALSE
+  
+  for (learning_index in 1:max_learning_rate) {
+    for (data_line in 1:data_amount) {
+      classe <- data_set[data_line, data_dimension + 1]
+      output_guess[data_line] <- ifelse(matrix_product(data_set[data_line, 1:data_dimension], weights) > 0, 1, 0)
+      
+      for(i in 1:data_dimension) {
+        weights[i] <- weights[i] + (classe - output_guess[data_line]) * data_set[data_line, i]
+      }
+    }
+    
+    if (is_stabilize <- all(output_guess == data_set[, data_dimension + 1])) {
+      break
+    }
+  }
+  
+  if (!is_stabilize) {
+    stop(cat("le jeu de données n'est pas sécable en 2 avec :", max_learning_rate, " itérations \n"), call. = FALSE)
+  }
+  
+  return(weights)
+}
+plot_data <- function(data_set){
+  normalized <- normalize_class_column(data_set)
+  normalized <- normalized[order(as.vector(t((normalized[3])))),]     
+  negativ <- normalized[normalized[,3]<1,]
+  positiv <- normalized[normalized[,3]>0,]
+  length(c(rep(2,nrow(negativ)),rep(3,nrow(positiv))))
+  plot(as.vector(t(data_set[1])),as.vector(t(data_set[2])), pch=c(rep(3,nrow(negativ)),rep(1,nrow(positiv))),col = c(rep("green",nrow(negativ)),rep("red",nrow(positiv))),lwd = 3)
+  
+}
+validate_axis <- function(a,b,data_set){
+  normalized <- normalize_class_column(data_set)
+  normalized <- normalized[order(as.vector(t((normalized[3])))),]     
+  negativ <- normalized[normalized[,3]<1,]
+  positiv <- normalized[normalized[,3]>0,]
+  negativRes<- as.vector(t((negativ[2]))) - as.vector(t((negativ[1])))* a - b
+  positivRes<- as.vector(t((positiv[2]))) - as.vector(t((positiv[1])))* a - b 
+  return (Reduce(function(u,v) u&&v ,(!(c(negativRes >0)))==(c(positivRes>0))))
+}
+
 shinyServer(function(input, output) {
   
   output$formuleNeurone <- renderUI({
@@ -97,18 +161,27 @@ shinyServer(function(input, output) {
          abline(res,col='red')
          }
        })
+       data_set <- read.table("./database/iris.txt", header = TRUE)
        
        output$handPlot <- renderPlot({
          # generate y values based on input$a, input$b and input$s from ui.R
          set.seed(1)
          x <- rnorm(5)
          y <- x + rnorm(5)
-         plot(x,y)
-         abline(input$a_hand,input$b_hand,col='red')
+         plot_data(data_set)
+         abline(input$b_hand,input$a_hand,col='red')
        })
-       
-       output$value <-renderPrint({input$a})
-       
+       output$autoPlot <- renderPlot({
+         # generate y values based on input$a, input$b and input$s from ui.R
+         set.seed(1)
+         x <- rnorm(5)
+         y <- x + rnorm(5)
+         plot_data(data_set)
+         abline(input$b_auto,input$a_auto,col='red')
+       })
+       output$value<-({
+         reactive(validate_axis(input$a_auto,input$b_auto,data_set))
+       })
        
        output$report <- downloadHandler(
          filename = "Modeles_lineaires.docx",

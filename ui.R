@@ -53,8 +53,9 @@ shinyUI(navbarPage("Linear regression with R",
                                        value = "handtrain",
                                        sidebarLayout(
                                          sidebarPanel(
-                                           sliderInput("a_hand","A:",min = -10,max = 10,value = 3),
-                                           sliderInput("b_hand","B:",min = -10,max = 10,value = -3),
+                                           
+                                           sliderInput("a_hand","A:",min = -1,max = 2,value = -1,step=0.1),
+                                           sliderInput("b_hand","B:",min = -10,max = 10,value = 8,step=0.1),
                                            verbatimTextOutput("value")
                                          ),
                                          
@@ -69,6 +70,19 @@ shinyUI(navbarPage("Linear regression with R",
                                        ),
                               tabPanel("Auto-entrainement",
                                        value = "autotrain",
+                                       sidebarLayout(
+                                         sidebarPanel(
+                                           selectInput(inputId='hand_dataset', label='Choose a dataset',
+                                                       choices=c('N(0,1)','Exp(1)','U(0,1)') ,multiple = FALSE, selected='N(0,1)'),
+                                           sliderInput("a_auto","A:",min = -10,max = 10,value = 3),
+                                           sliderInput("b_auto","B:",min = -10,max = 10,value = -3),
+                                         ),
+                                         
+                                         # Show a plot of the generated distribution
+                                         mainPanel(
+                                           plotOutput("autoPlot"),
+                                         )
+                                       )
                                       ),
                               tabPanel("Réseaux de neuronnes")),
                    tabPanel('Simulations',
