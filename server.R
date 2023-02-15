@@ -28,14 +28,14 @@ normalize_class_column <- function(data_set) {
   data_set[ncol(data_set)] <- ifelse(data_set[ncol(data_set)] == default_value, 0, 1)
   return(data_set)
 }
-perceptron <- function(data_set, max_learning_rate) {
+perceptron <- function(data_set, max_learning_iter) {
   data_dimension <- ncol(data_set) - 1
   data_amount <- nrow(data_set)
   weights <- generate_random_weight(data_dimension, -1, 1)
   output_guess <- data_set[, data_dimension + 1]
   is_stabilize <- FALSE
   
-  for (learning_index in 1:max_learning_rate) {
+  for (learning_index in 1:max_learning_iter) {
     for (data_line in 1:data_amount) {
       classe <- data_set[data_line, data_dimension + 1]
       output_guess[data_line] <- ifelse(matrix_product(data_set[data_line, 1:data_dimension], weights) > 0, 1, 0)
@@ -51,7 +51,6 @@ perceptron <- function(data_set, max_learning_rate) {
   }
   
   if (!is_stabilize) {
-    #stop(cat("le jeu de données n'est pas sécable en 2 avec :", max_learning_rate, " itérations \n"), call. = FALSE)
     return ("Le jeu de données n'est pas linéairement séparable")
   }
   
@@ -89,30 +88,7 @@ shinyServer(function(input, output,session) {
     withMathJax(paste("$$w_1x_1+\\ldots+w_mx_m=\\sum_{j=1}^m w_j x_j.$$"))
   })
   
-        output$Variables = renderUI(
-          {
-            if (!is.null(input$Dataset))
-            {
-              D_name=input$Dataset
-              data(D_name)
-              wellPanel(
-              selectInput("Y_var",'Response variable', choices=colnames(get(D_name))), 
-              selectInput("X_var",'Explanatory variable', choices=colnames(get(D_name))))
-            }
-        })
-
-        output$Variables2 = renderUI(
-          {
-            if (!is.null(input$Import))
-            {
-              inFile <- input$Import
-              file <- inFile$datapath
-              DATA=read.table(file,header=TRUE)
-              wellPanel(
-                selectInput("Y_var2",'Response variable', choices=colnames(DATA)), 
-                selectInput("X_var2",'Explanatory variable', choices=colnames(DATA)))
-            }
-          })
+      
         
         values <- reactiveValues(x=rnorm(30),e=rnorm(30),handy="RIEN",data_set_choosen=read.table("./database/xor.txt", header = TRUE),outputPerceptronValue=" ",b_auto=1,a_auto=1)
         
@@ -126,51 +102,7 @@ shinyServer(function(input, output,session) {
            values$e=rnorm(input$n)
            })
       
-       output$Scatterplot <- renderPlot({
-    # generate y values based on input$a, input$b and input$s from ui.R
-    x=values$x
-    e=values$e
-    y=input$a*x+input$b+input$s*e
-    res=lm(y~x)
-    x0=input$x0
-    est=predict(res,data.frame(x=x0))
-    plot(x,y,main=paste('cor=',cor(x,y),' Estimation: ',est, sep=''))
-        abline(res,col='red')
-        segments(x0,min(y),x0,est,col='green',lty=3)
-        segments(min(x),est,x0,est,col='blue',lty=3)
-        
-    
-  })
        
-       
-       output$Scatterplot2 <- renderPlot({
-         # generate y values based on input$a, input$b and input$s from ui.R
-         if (!is.null(input$Dataset))
-         {
-         attach(get(input$Dataset))
-           if (!is.null(input$X_var)){x=get(input$X_var)}
-           if (!is.null(input$Y_var)){y=get(input$Y_var)}
-         plot(x,y,main=paste('cor=',cor(x,y),sep=''), xlab=input$X_var, ylab=input$Y_var)
-         res=lm(y~x)
-         abline(res,col='red')
-         }
-       })
-       
-       output$Scatterplot3 <- renderPlot({
-         # generate y values based on input$a, input$b and input$s from ui.R
-         if (!is.null(input$Import))
-           {
-           inFile <- input$Import
-           file <- inFile$datapath
-           DATA=read.table(file,header=TRUE)
-           attach(DATA)
-           x=get(input$X_var2)
-         y=get(input$Y_var2)
-         plot(x,y,main=paste('cor=',cor(x,y),sep=''), xlab=input$X_var2, ylab=input$Y_var2)
-         res=lm(y~x)
-         abline(res,col='red')
-         }
-       })
        data_set <- read.table("./database/iris.txt", header = TRUE)
        
        output$handPlot <- renderPlot({
@@ -259,33 +191,7 @@ shinyServer(function(input, output,session) {
          reactive(values$outputPerceptronValue)
        })
        
-       output$report <- downloadHandler(
-         filename = "Modeles_lineaires.docx",
-         content = function(file) {
-           # Copy the report file to a temporary directory before processing it, in
-           # case we don't have write permissions to the current working dir (which
-           # can happen when deployed).
-           tempReport <- file.path(tempdir(), "Modeles_lineaires.Rmd")
-           file.copy("Modeles_lineaires.Rmd", tempReport, overwrite = TRUE)
-           # Set up parameters to pass to Rmd document
-           params <- list(n=input$n,
-                          X_law=input$X_law,  
-                          x0=input$x0,
-                          a=input$a,
-                          b=input$b,
-                          s=input$s,
-                          x=values$x,
-                          e=values$e)
-           
-           # Knit the document, passing in the `params` list, and eval it in a
-           # child of the global environment (this isolates the code in the document
-           # from the code in this app).
-           rmarkdown::render(tempReport, output_file = file,
-                             params = params,
-                             envir = new.env(parent = globalenv())
-           )
-         }
-       )
+       
        
        output$launchPerceptronReport <- downloadHandler(
          filename = "Perceptron.pdf",

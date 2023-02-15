@@ -93,54 +93,8 @@ shinyUI(
                                          )
                                        )
                                       ),
-                              tabPanel("Réseaux de neuronnes")),
-                   tabPanel('Simulations',
-                            # Application title
-                            # Sidebar with a slider input for number of bins 
-                            sidebarLayout(
-                              sidebarPanel(
-                                selectInput(inputId='X_law', label='Choose X\'s distribution',
-                                            choices=c('N(0,1)','Exp(1)','U(0,1)') ,multiple = FALSE, selected='N(0,1)'),
-                                sliderInput("n","Sample size:",min = 1,max = 100,value = 30),
-                                sliderInput("a","A:",min = -10,max = 10,value = 3),
-                                sliderInput("b","B:",min = -10,max = 10,value = -3),
-                                sliderInput("s","S:",min =0,max = 10,value =1,step= .01),
-                                sliderInput("x0","Eval.point :",min =-2,max = 2,value =1,step= .01)
-                                
-                              ),
-                              
-                              # Show a plot of the generated distribution
-                              mainPanel(
-                                plotOutput("Scatterplot"),
-                                downloadButton("report", "Generate report")
-                                
-                              )
-                              
-                            )
-                            
-                   ),
-                   tabPanel('Data sets',
-                            sidebarLayout(
-                              sidebarPanel(
-                                selectInput('Dataset','Select a data set from R',
-                                            choices=(data()[[3]])[,3],selected='trees'),
-                                uiOutput("Variables")),
-                              mainPanel(
-                                plotOutput("Scatterplot2")
-                              )
-                              
-                            )
-                   ),
-                   tabPanel('Import data',
-                            sidebarLayout(
-                              sidebarPanel(
-                                fileInput('Import','Select a txt file to import'),
-                                uiOutput("Variables2")),
-                              # Show a plot of the generated distribution
-                              mainPanel(
-                                plotOutput("Scatterplot3")
-                              )
-                              
-                            )
-                   )
+                              #tabPanel("Réseaux de neuronnes")),
+                   
+                   
+                   
 ))
