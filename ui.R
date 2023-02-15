@@ -1,8 +1,11 @@
 
 library(shiny)
+library(shinyjs)
 
-# Define UI for application that draws a histogram
-shinyUI(navbarPage("Linear regression with R",
+shinyUI(
+        navbarPage("Perceptron",
+                   id="mainNavBar",
+                   useShinyjs(),
                    tabPanel("Menu",
                             value = "menu",
                             #menu with two big buttons
@@ -45,7 +48,7 @@ shinyUI(navbarPage("Linear regression with R",
                                            uiOutput("formuleNeurone"),
                                            img(src="./neuron.png",width="20%",style="display: block; margin-left: auto; margin-right: auto;"),
                                            p("On peut utiliser ce neurone, seul, en qualité de perceptron. Un perceptron est un algorithme d'apprentissage supervisé de clasifeur binaire. Il permet de séparer des données linérairement séparables. En prenant en entrée chaque dimension il va chercher un hyperplan qui va séparer les deux classes de nos données dans la perspectives de pouvoir classifier les prochains exemples à leurs tour."),
-                                           actionButton('handtrain','Séparer des données')
+                                           actionButton('goToHandtrain','Séparer des données')
                                          ))
                                        )
                               ),
@@ -56,7 +59,8 @@ shinyUI(navbarPage("Linear regression with R",
                                            
                                            sliderInput("a_hand","A:",min = -1,max = 2,value = -1,step=0.1),
                                            sliderInput("b_hand","B:",min = -10,max = 10,value = 8,step=0.1),
-                                           verbatimTextOutput("value")
+                                           verbatimTextOutput("value"),
+                                           actionButton('handtrainNext','Continuer')
                                          ),
                                          
                                          # Show a plot of the generated distribution
@@ -72,15 +76,20 @@ shinyUI(navbarPage("Linear regression with R",
                                        value = "autotrain",
                                        sidebarLayout(
                                          sidebarPanel(
-                                           selectInput(inputId='hand_dataset', label='Choose a dataset',
-                                                       choices=c('N(0,1)','Exp(1)','U(0,1)') ,multiple = FALSE, selected='N(0,1)'),
+                                           selectInput(inputId='auto_dataset', label='Choisissez un set de données :',
+                                                       choices=c('Exemple 1','Exemple 2','AND','XOR','Iris') ,multiple = FALSE, selected='N(0,1)'),
+                                           fileInput('importAuto','Select a txt file to import'),
                                            sliderInput("a_auto","A:",min = -10,max = 10,value = 3),
                                            sliderInput("b_auto","B:",min = -10,max = 10,value = -3),
+                                           actionButton('launchPerceptron','Lancer le perceptron'),
+                                           verbatimTextOutput("outputPerceptron"),
+                                           
                                          ),
                                          
                                          # Show a plot of the generated distribution
                                          mainPanel(
                                            plotOutput("autoPlot"),
+                                           downloadButton('launchPerceptronReport','Générer un rapport'),
                                          )
                                        )
                                       ),

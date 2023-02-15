@@ -1,0 +1,57 @@
+---
+title: "Perceptron"
+author: "Jean-Daniel de Ambrogi"
+output: pdf_document
+params:
+  data_set: NULL
+  a: NULL
+  b: NULL
+  result: NULL
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+data_set=params$data_set
+result=params$result
+a=params$a
+b=params$b
+
+```
+
+## Description des données d'entrée
+Soit nos données d'entrées :
+
+
+```{r modele}
+summary(data_set)
+```
+
+## Lancement du perceptron
+Après avoir lancé le perceptron nous obtenons le vecteur suivant : $$[`r result[1]`,`r result[2]`,`r result[3]`]$$
+Nos données sont donc linéairement séparables.
+On peut determiner une droite séparant les deux classes d'équation suivante:
+$$Y=`r a` X+`r b`.$$
+Que l'on peut illustrer par le graphe suivant :
+
+
+```{r nuage, fig.height=5,echo=FALSE}
+normalize_class_column <- function(data_set) {
+  default_value <- data_set[1, ncol(data_set)]
+  data_set[ncol(data_set)] <- ifelse(data_set[ncol(data_set)] == default_value, 0, 1)
+  return(data_set)
+}
+normalized <- normalize_class_column(data_set)
+  normalized <- normalized[order(as.vector(t((normalized[3])))),]     
+  negativ <- normalized[normalized[,3]<1,]
+  positiv <- normalized[normalized[,3]>0,]
+  length(c(rep(2,nrow(negativ)),rep(3,nrow(positiv))))
+  plot(as.vector(t(normalized[1])),as.vector(t(normalized[2])), pch=c(rep(3,nrow(negativ)),rep(1,nrow(positiv))),col = c(rep("green",nrow(negativ)),rep("red",nrow(positiv))),lwd = 3)
+  abline(b,a,col='red')
+
+```
+
+## Annexe
+Les données brutes :
+```{r data}
+data_set
+```
